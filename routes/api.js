@@ -38,7 +38,7 @@ router.get('/users/search', async (req, res) => {
 });
 
 // ========================================
-// 2. GET USER PROFILE
+// 2. GET USER PROFILE (FIXED)
 // ========================================
 router.get('/users/:userId', async (req, res) => {
   try {
@@ -66,12 +66,21 @@ router.get('/users/:userId', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    res.json(result.rows[0]);
+    // Return the data with proper null handling
+    const user = result.rows[0];
+    res.json({
+      ...user,
+      followers_count: user.followers_count || 0,
+      following_count: user.following_count || 0,
+      friends_count: user.friends_count || 0,
+      profile_views_count: user.profile_views_count || 0
+    });
   } catch (error) {
     console.error('Get user error:', error);
     res.status(500).json({ error: 'Failed to get user' });
   }
 });
+
 
 // ========================================
 // 3. GET USER ROOM HISTORY
